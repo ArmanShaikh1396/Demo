@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Quote Machine</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #2c3e50;
+            transition: background-color 1s ease;
+            padding: 20px;
+        }
+        
+        #quote-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px 50px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        
+        .quote-text {
+            text-align: center;
+            font-size: 28px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            font-weight: 500;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        .quote-text i {
+            margin-right: 15px;
+            font-size: 24px;
+        }
+        
+        .quote-author {
+            text-align: right;
+            font-size: 18px;
+            font-style: italic;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #tweet-quote {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            background-color: #1DA1F2;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        #tweet-quote:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #tweet-quote i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        #new-quote {
+            padding: 12px 24px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #new-quote:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 20px;
+            color: #7f8c8d;
+            padding: 20px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 650px) {
+            #quote-box {
+                padding: 30px;
+            }
+            
+            .quote-text {
+                font-size: 24px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            #tweet-quote, #new-quote {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            #quote-box {
+                padding: 20px;
+            }
+            
+            .quote-text {
+                font-size: 20px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <!-- The quote box with all required elements -->
+        <div id="quote-box">
+            <div id="text" class="quote-text">
+                <i class="fas fa-quote-left"></i>
+                <span id="quote-content">Loading...</span>
+            </div>
+            <div id="author" class="quote-author">- <span id="author-content">Author</span></div>
+            
+            <div class="buttons">
+                <a id="tweet-quote" href="#" target="_blank">
+                    <i class="fab fa-twitter"></i> Tweet Quote
+                </a>
+                <button id="new-quote">New Quote</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Built for FreeCodeCamp Front End Libraries Project</p>
+        </div>
+    </div>
+
+    <!-- FreeCodeCamp Test Script -->
+    <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
+
+    <!-- React and ReactDOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Main Application Script -->
+    <script type="text/babel">
+        // Quotes database
+        const quotes = [
+            {
+                text: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs"
+            },
+            {
+                text: "Life is what happens to you while you're busy making other plans.",
+                author: "John Lennon"
+            },
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                text: "It is during our darkest moments that we must focus to see the light.",
+                author: "Aristotle"
+            },
+            {
+                text: "Whoever is happy will make others happy too.",
+                author: "Anne Frank"
+            },
+            {
+                text: "You must be the change you wish to see in the world.",
+                author: "Mahatma Gandhi"
+            },
+            {
+                text: "Spread love everywhere you go. Let no one ever come to you without leaving happier.",
+                author: "Mother Teresa"
+            },
+            {
+                text: "The only thing we have to fear is fear itself.",
+                author: "Franklin D. Roosevelt"
+            },
+            {
+                text: "Do not go where the path may lead, go instead where there is no path and leave a trail.",
+                author: "Ralph Waldo Emerson"
+            },
+            {
+                text: "Be yourself; everyone else is already taken.",
+                author: "Oscar Wilde"
+            },
+            {
+                text: "In the middle of difficulty lies opportunity.",
+                author: "Albert Einstein"
+            },
+            {
+                text: "The journey of a thousand miles begins with one step.",
+                author: "Lao Tzu"
+            },
+            {
+                text: "The purpose of our lives is to be happy.",
+                author: "Dalai Lama"
+            },
+            {
+                text: "Get busy living or get busy dying.",
+                author: "Stephen King"
+            },
+            {
+                text: "You only live once, but if you do it right, once is enough.",
+                author: "Mae West"
+            }
+        ];
+        
+        // Colors for background transitions
+        const colors = [
+            '#2c3e50', '#16a085', '#27ae60', '#2980b9', 
+            '#8e44ad', '#2c3e50', '#f39c12', '#d35400', 
+            '#c0392b', '#7f8c8d', '#1abc9c', '#34495e'
+        ];
+        
+        // Main App Component
+        function App() {
+            const [quote, setQuote] = React.useState({text: '', author: ''});
+            const [loading, setLoading] = React.useState(true);
+            const [colorIndex, setColorIndex] = React.useState(0);
+            
+            // Function to get a random quote
+            const getRandomQuote = () => {
+                const randomIndex = Math.floor(Math.random() * quotes.length);
+                return quotes[randomIndex];
+            };
+            
+            // Function to update the quote
+            const updateQuote = () => {
+                setLoading(true);
+                
+                // Simulate loading for better UX
+                setTimeout(() => {
+                    const newQuote = getRandomQuote();
+                    setQuote(newQuote);
+                    
+                    // Update background color
+                    const newColorIndex = (colorIndex + 1) % colors.length;
+                    setColorIndex(newColorIndex);
+                    
+                    // Update background color of body
+                    document.body.style.backgroundColor = colors[newColorIndex];
+                    
+                    // Update button colors
+                    document.getElementById('new-quote').style.backgroundColor = colors[newColorIndex];
+                    document.getElementById('tweet-quote').style.backgroundColor = colors[newColorIndex];
+                    
+                    setLoading(false);
+                }, 300);
+            };
+            
+            // Initialize with a random quote
+            React.useEffect(() => {
+                // Set initial background color
+                document.body.style.backgroundColor = colors[colorIndex];
+                document.getElementById('new-quote').style.backgroundColor = colors[colorIndex];
+                document.getElementById('tweet-quote').style.backgroundColor = colors[colorIndex];
+                
+                // Get initial quote
+                const initialQuote = getRandomQuote();
+                setQuote(initialQuote);
+                setLoading(false);
+            }, []);
+            
+            // Update tweet link whenever quote changes
+            React.useEffect(() => {
+                if (quote.text) {
+                    const tweetText = `${quote.text} - ${quote.author}`;
+                    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+                    document.getElementById('tweet-quote').href = tweetUrl;
+                }
+            }, [quote]);
+            
+            return (
+                <React.Fragment>
+                    <div id="quote-box">
+                        {loading ? (
+                            <div id="text" className="quote-text loading">Loading quote...</div>
+                        ) : (
+                            <React.Fragment>
+                                <div id="text" className="quote-text">
+                                    <i className="fas fa-quote-left"></i>
+                                    {quote.text}
+                                </div>
+                                <div id="author" className="quote-author">- {quote.author}</div>
+                            </React.Fragment>
+                        )}
+                        
+                        <div className="buttons">
+                            <a 
+                                id="tweet-quote" 
+                                href="#" 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <i className="fab fa-twitter"></i> Tweet Quote
+                            </a>
+                            <button 
+                                id="new-quote" 
+                                onClick={updateQuote}
+                                disabled={loading}
+                            >
+                                {loading ? 'Loading...' : 'New Quote'}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="footer">
+                        <p>Built for FreeCodeCamp Front End Libraries Project</p>
+                    </div>
+                </React.Fragment>
+            );
+        }
+        
+        // Render the app
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
